@@ -1,12 +1,18 @@
-import {
-  IsString,
-  MinLength,
-  MaxLength,
-  Matches,
-  IsNotEmpty,
-} from 'class-validator';
+import { IsString, MinLength, MaxLength, Matches } from 'class-validator';
 
 export class AuthCredentialsDto {
+  @IsString()
+  @MinLength(4)
+  @MaxLength(20)
+  name: string;
+
+  @IsString()
+  @MaxLength(100)
+  @Matches(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/, {
+    message: 'Incorrect email format',
+  })
+  email: string;
+
   @IsString()
   @MinLength(4)
   @MaxLength(20)
