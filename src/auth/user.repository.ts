@@ -35,7 +35,31 @@ export class UserRepository extends Repository<User> {
     }
   }
 
+  async validateUserPassword(authCredentialsDto: AuthCredentialsDto): Promise<any> {
+    const { email, password } = authCredentialsDto;
+    const query = this.createQueryBuilder('user');
+
+    if (await this.validateEmail(email)) {
+      query.where('user.email = :email', { email });
+    } else {
+      query.where('user.username = :email', { email });
+    }
+
+    const user = await query.getOne();
+
+    if (user && await user.validatePassword(password)) {
+      return user;
+    } else {
+      return null;
+    }
+  }
+
   private async hasPassword(password: string, salt: string): Promise<string> {
     return await bcrypt.hash(password, salt);
+  }
+
+  private async validateEmail(email): Promise<boolean> {
+    const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return re.test(String(email).toLowerCase());
   }
 }
