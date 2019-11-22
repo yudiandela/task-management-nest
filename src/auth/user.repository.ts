@@ -48,7 +48,7 @@ export class UserRepository extends Repository<User> {
     const user = await query.getOne();
 
     if (user && await user.validatePassword(password)) {
-      return user;
+      return user.username;
     } else {
       return null;
     }
